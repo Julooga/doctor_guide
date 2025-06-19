@@ -7,6 +7,13 @@ import path from 'path';
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
+    // proxy: {
+    //   '/med': {
+    //     target: 'https://s92t9ee2c1.execute-api.ap-northeast-2.amazonaws.com',
+    //     changeOrigin: true,
+    //     secure: false,
+    //   },
+    // },
     https: {
       key: fs.readFileSync(
         path.resolve(__dirname, 'certs', 'localhost-key.pem')

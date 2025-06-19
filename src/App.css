@@ -1,9 +1,26 @@
 @import 'tailwindcss';
 @plugin "@iconify/tailwind4";
 @import 'tailwindcss-animated';
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
 @plugin "flyonui" {
   themes: black --default;
 }
 
 @import '../node_modules/flyonui/variants.css'; /* Require only if you want to use FlyonUI JS component */
 @source "../node_modules/flyonui/dist/index.js"; /* Require only if you want to use FlyonUI JS component */
+
+body {
+  font-family: 'Pretendard Variable', Pretendard, -apple-system,
+    BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI',
+    'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+}
+
+textarea {
+  &::placeholder {
+    font-family: 'Pretendard Variable', Pretendard, -apple-system,
+      BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI',
+      'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic',
+      ' Apple Color Emoji';
+  }
+}
