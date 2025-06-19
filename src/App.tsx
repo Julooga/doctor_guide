@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect, useRef, useState } from 'react';
-import './App.css';
+import { useEffect, useRef, useState } from "react";
+import "./App.css";
 
-import SendInput from './components/SendInput';
-import Bubble from './components/Bubble';
-import { Api } from '@julooga/doctor_guide_api_sdk';
-import { useChat } from '@ai-sdk/react';
+import SendInput from "./components/SendInput";
+import Bubble from "./components/Bubble";
+import { Api } from "@julooga/doctor_guide_api_sdk";
+import { useChat } from "@ai-sdk/react";
 
 function App() {
   const divRef = useRef<HTMLDivElement>(null);
   const getButtonLabel = (isLoading: boolean) => {
     if (isLoading) {
-      return '전송 중...';
+      return "전송 중...";
     }
 
-    return '전송';
+    return "전송";
   };
 
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
@@ -23,15 +23,49 @@ function App() {
     });
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('ko-KR', {
-      hour: '2-digit',
-      minute: '2-digit',
+    return date.toLocaleTimeString("ko-KR", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
+  const getCurrentLocation = (): Promise<GeolocationPosition> => {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject(new Error("Geolocation을 지원하지 않습니다."));
+      }
+      navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+  };
+  const fetchPharmacies = async (apiKey: string) => {
+    try {
+      // https://dapi.kakao.com/v2/local/geo/coord2regioncode.
+      const position = await getCurrentLocation();
+      const { latitude, longitude } = position.coords;
+      const response = await fetch(
+        `https://dapi.kakao.com/v2/local/search/category.json?category_group_code=HP8&radius=500&x=${longitude}&y=${latitude}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `KakaoAK ${apiKey}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("약국 정보를 가져오는데 실패했습니다:", error);
+      throw error;
+    }
+  };
   useEffect(() => {
     if (divRef.current && isLoading) {
-      divRef.current.scrollIntoView({ behavior: 'smooth' });
+      divRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, isLoading]);
 
@@ -64,9 +98,9 @@ function App() {
                   key={message.id}
                   role={message.role}
                   assistantContent={
-                    message.role === 'assistant' ? message.content : ''
+                    message.role === "assistant" ? message.content : ""
                   }
-                  senderContent={message.role === 'user' ? message.content : ''}
+                  senderContent={message.role === "user" ? message.content : ""}
                   assistantTime={formatTime(new Date())}
                   senderTime={formatTime(new Date())}
                 />
@@ -84,9 +118,7 @@ function App() {
             )}
           </div>
           <div className="flex flex-col gap-3 fixed bottom-0 max-w-md p-2 w-full left-1/2 -translate-x-1/2 bg-base-200">
-            <form
-              onSubmit={handleSubmit}
-              className="flex gap-3">
+            <form onSubmit={handleSubmit} className="flex gap-3">
               <SendInput
                 {...{
                   isLoading,
