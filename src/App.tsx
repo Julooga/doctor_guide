@@ -1,21 +1,15 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import "./App.css";
 
 import SendInput from "./components/SendInput";
 import Bubble from "./components/Bubble";
-import { Api } from "@julooga/doctor_guide_api_sdk";
+
 import { useChat } from "@ai-sdk/react";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { getLocationByIP, runLocationDiagnostic } from "./function/test";
 
 function App() {
   const divRef = useRef<HTMLDivElement>(null);
-  const getButtonLabel = (isLoading: boolean) => {
-    if (isLoading) {
-      return "전송 중...";
-    }
-
-    return "전송";
-  };
 
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
     useChat({
@@ -37,17 +31,26 @@ function App() {
       navigator.geolocation.getCurrentPosition(resolve, reject);
     });
   };
-  const fetchPharmacies = async (apiKey: string) => {
+
+  const fetchPharmacies = async () => {
+    const position = await getCurrentLocation();
+    console.log("현재 위치:", {
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude,
+    });
+
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    // await getLocationByIP().then((location) => {
+    //   console.log("IP 기반 위치 정보:", location);
+    // });
     try {
-      // https://dapi.kakao.com/v2/local/geo/coord2regioncode.
-      const position = await getCurrentLocation();
-      const { latitude, longitude } = position.coords;
       const response = await fetch(
         `https://dapi.kakao.com/v2/local/search/category.json?category_group_code=HP8&radius=500&x=${longitude}&y=${latitude}`,
         {
           method: "GET",
           headers: {
-            Authorization: `KakaoAK ${apiKey}`,
+            Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_REST_API_KEY}`,
           },
         }
       );
@@ -63,7 +66,9 @@ function App() {
       throw error;
     }
   };
+
   useEffect(() => {
+    runLocationDiagnostic();
     if (divRef.current && isLoading) {
       divRef.current.scrollIntoView({ behavior: "smooth" });
     }
@@ -71,12 +76,20 @@ function App() {
 
   return (
     <>
+      {" "}
       <header className="max-w-md mx-auto sticky top-0 z-10 bg-black/80 backdrop-blur-sm border-b border-primary">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
             <div>
               <h1 className="text-lg font-bold text-white">Doctor Guide</h1>
-              <p className="text-sm text-white/80">AI 예진 도우미</p>
+              <p className="text-sm text-white/80">AI 예진 도우미</p>{" "}
+              <button
+                type="button"
+                className="btn btn-primary btn-sm absolute top-3 right-3"
+                onClick={fetchPharmacies}
+              >
+                근처 약국 찾기
+              </button>
             </div>
           </div>
         </div>
