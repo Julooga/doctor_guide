@@ -76,16 +76,20 @@ export default function Bubble({
             }
             if (part.trim()) {
               const trimmedPart = part.trim();
-              if (trimmedPart.includes('주의')) {
+              if (
+                trimmedPart.includes('Important') ||
+                trimmedPart.includes('warning')
+              ) {
                 return (
                   <span
                     key={`${index}-warning`}
                     className="inline-flex items-start gap-1 text-error py-1">
-                    <i>⚠️</i>
+                    <span className="icon-[tabler--alert-triangle] text-error size-5 shrink-0"></span>
                     {trimmedPart}
                   </span>
                 );
               }
+
               return (
                 <span
                   key={index}

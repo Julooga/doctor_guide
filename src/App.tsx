@@ -13,9 +13,8 @@ function App() {
       initialMessages: [
         {
           role: 'system',
-          content: `안녕하세요!\nAI 예진 도우미 닥터 가이드입니다.\n증상을 듣고 적절한 진료과 안내와 증상 요약을 도와드릴게요.주의: 제 정보는 진단/처방이 아니며 의사 진료를 대신할 수 없습니다
-          위급 시엔 즉시 119나 응급실로 가세요.\n이제, 어떻게 불편하신지 말씀해주시겠어요?`,
-          id: '1',
+          content: `Hello!\n This is Dr. Guide, your AI pre-diagnosis assistant. I'll guide you to the best primary care department for your symptoms and summarize your condition, saving you time.\n Important: My information is not a diagnosis or prescription and cannot replace a doctor's consultation. In emergencies, please call 911 or go to the nearest emergency room immediately.\nNow, tell me roughly what's bothering you?`,
+          id: 'chat_123456789',
         },
       ],
     });
@@ -84,8 +83,10 @@ function App() {
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
             <div>
-              <h1 className="text-lg font-bold text-white">Doctor Guide</h1>
-              <p className="text-sm text-white/80">AI 예진 도우미</p>{' '}
+              <h1 className="text-lg font-bold text-white">Dr.Guide</h1>
+              <p className="text-sm text-white/80">
+                AI Pre-diagnosis Assistant
+              </p>
             </div>
           </div>
         </div>
@@ -137,8 +138,8 @@ function App() {
             </form>
             <em className="text-xs text-warning flex gap-2">
               <span>
-                <i>⚠️</i>이 서비스는 의학적 조언을 제공하지 않습니다. 응급
-                상황에서는 즉시 전문가의 도움을 받으세요.
+                <i>⚠️</i>This service does not provide medical advice. In
+                emergencies, please seek immediate professional help.
               </span>
             </em>
           </div>

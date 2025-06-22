@@ -29,7 +29,7 @@ export default function SendInput({
         rows={3}
         onChange={onChange}
         className="grow resize-none"
-        placeholder="증상을 러프하게 써주세요. 꼭 문장으로 쓸 필요는 없어요. 예시: 두통, 기침, 열, 구토, 설사 등"
+        placeholder="message here"
       />
       <button
         disabled={isLoading}
