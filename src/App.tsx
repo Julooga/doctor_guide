@@ -1,12 +1,12 @@
-import { useEffect, useRef } from "react";
-import "./App.css";
+import { useEffect, useRef } from 'react';
+import './App.css';
 
-import SendInput from "./components/SendInput";
-import Bubble from "./components/Bubble";
+import SendInput from './components/SendInput';
+import Bubble from './components/Bubble';
 
-import { useChat } from "@ai-sdk/react";
+import { useChat } from '@ai-sdk/react';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { getLocationByIP, runLocationDiagnostic } from "./function/test";
+// import { getLocationByIP, runLocationDiagnostic } from './function/test';
 
 function App() {
   const divRef = useRef<HTMLDivElement>(null);
@@ -17,79 +17,96 @@ function App() {
     });
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString("ko-KR", {
-      hour: "2-digit",
-      minute: "2-digit",
+    return date.toLocaleTimeString('ko-KR', {
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
-  const getCurrentLocation = (): Promise<GeolocationPosition> => {
-    return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) {
-        reject(new Error("Geolocation을 지원하지 않습니다."));
-      }
-      navigator.geolocation.getCurrentPosition(resolve, reject);
-    });
-  };
+  // const getCurrentLocation = (): Promise<GeolocationPosition> => {
+  //   return new Promise((resolve, reject) => {
+  //     if (!navigator.geolocation) {
+  //       reject(new Error('Geolocation을 지원하지 않습니다.'));
+  //     }
+  //     navigator.geolocation.getCurrentPosition(resolve, reject, {
+  //       enableHighAccuracy: true,
+  //       timeout: 10000,
+  //       maximumAge: 600000,
+  //     });
+  //   });
+  // };
 
-  const fetchPharmacies = async () => {
-    const position = await getCurrentLocation();
-    console.log("현재 위치:", {
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude,
-    });
+  // const fetchPharmacies = async () => {
+  //   console.log('fetchPharmacies 함수 시작!'); // 디버깅용 로그
+  //   const position = await getCurrentLocation();
+  //   console.log('현재 위치:', {
+  //     latitude: position.coords.latitude,
+  //     longitude: position.coords.longitude,
+  //   });
 
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
-    // await getLocationByIP().then((location) => {
-    //   console.log("IP 기반 위치 정보:", location);
-    // });
+  //   const latitude = position.coords.latitude;
+  //   const longitude = position.coords.longitude;
+  //   // await getLocationByIP().then((location) => {
+  //   //   console.log("IP 기반 위치 정보:", location);
+  //   // });
+
+  //   const response = await fetch(
+  //     `https://dapi.kakao.com/v2/local/search/category.json?category_group_code=HP8&ㅅ&x=${longitude}&y=${latitude}`,
+  //     {
+  //       method: 'GET',
+  //       headers: {
+  //         Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_REST_API_KEY}`,
+  //       },
+  //     }
+  //   );
+
+  //   if (!response.ok) {
+  //     throw new Error(`HTTP error! status: ${response.status}`);
+  //   }
+
+  //   const data = await response.json();
+  //   return data;
+  // };
+
+  const fetchList = async () => {
     try {
-      const response = await fetch(
-        `https://dapi.kakao.com/v2/local/search/category.json?category_group_code=HP8&radius=500&x=${longitude}&y=${latitude}`,
+      const pharmacies = await fetch(
+        'https://1acgaqfa8f.execute-api.ap-northeast-2.amazonaws.com/hospital',
         {
-          method: "GET",
+          method: 'GET',
           headers: {
-            Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_REST_API_KEY}`,
+            'Content-Type': 'application/json',
           },
         }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data;
+      ).then((res) => res.json());
+      console.log('약국 목록:', pharmacies);
+      // 여기에 약국 목록을 처리하는 로직을 추가하세요.
     } catch (error) {
-      console.error("약국 정보를 가져오는데 실패했습니다:", error);
-      throw error;
+      console.error('약국 목록을 가져오는 중 오류 발생:', error);
     }
   };
 
   useEffect(() => {
-    runLocationDiagnostic();
+    // runLocationDiagnostic();
     if (divRef.current && isLoading) {
-      divRef.current.scrollIntoView({ behavior: "smooth" });
+      divRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isLoading]);
 
   return (
     <>
-      {" "}
       <header className="max-w-md mx-auto sticky top-0 z-10 bg-black/80 backdrop-blur-sm border-b border-primary">
         <div className="flex items-center justify-between px-4 py-3">
+          <button
+            type="button"
+            className="btn btn-primary btn-sm absolute top-3 right-3"
+            onClick={fetchList}>
+            근처 약국 찾기
+          </button>
           <div className="flex items-center gap-3">
             <div>
               <h1 className="text-lg font-bold text-white">Doctor Guide</h1>
-              <p className="text-sm text-white/80">AI 예진 도우미</p>{" "}
-              <button
-                type="button"
-                className="btn btn-primary btn-sm absolute top-3 right-3"
-                onClick={fetchPharmacies}
-              >
-                근처 약국 찾기
-              </button>
+              <p className="text-sm text-white/80">AI 예진 도우미</p>{' '}
             </div>
           </div>
         </div>
@@ -103,7 +120,6 @@ function App() {
               위급 시엔 즉시 119나 응급실로 가세요.\n이제, 어떻게 불편하신지 말씀해주시겠어요?`}
               assistantTime={formatTime(new Date())}
             />
-
             {messages.map((message) => {
               return (
                 <Bubble
@@ -111,15 +127,14 @@ function App() {
                   key={message.id}
                   role={message.role}
                   assistantContent={
-                    message.role === "assistant" ? message.content : ""
+                    message.role === 'assistant' ? message.content : ''
                   }
-                  senderContent={message.role === "user" ? message.content : ""}
+                  senderContent={message.role === 'user' ? message.content : ''}
                   assistantTime={formatTime(new Date())}
                   senderTime={formatTime(new Date())}
                 />
               );
             })}
-
             {isLoading && (
               <Bubble
                 isLoading={true}
@@ -131,7 +146,9 @@ function App() {
             )}
           </div>
           <div className="flex flex-col gap-3 fixed bottom-0 max-w-md p-2 w-full left-1/2 -translate-x-1/2 bg-base-200">
-            <form onSubmit={handleSubmit} className="flex gap-3">
+            <form
+              onSubmit={handleSubmit}
+              className="flex gap-3">
               <SendInput
                 {...{
                   isLoading,
