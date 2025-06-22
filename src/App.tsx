@@ -71,7 +71,7 @@ function App() {
   const fetchList = async () => {
     try {
       const pharmacies = await fetch(
-        'https://1acgaqfa8f.execute-api.ap-northeast-2.amazonaws.com/hospital',
+        `${process.env.VITE_API_URL}/hospital`,
         {
           method: 'GET',
           headers: {
