@@ -113,6 +113,7 @@ function App() {
                 />
               );
             })}
+
             {isLoading && (
               <Bubble
                 isLoading={true}

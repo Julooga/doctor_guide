@@ -1,4 +1,5 @@
 import type { Ref } from 'react';
+import SymptomSummaryCard from './SymptomSummaryCard';
 
 interface BubbleProps {
   role: 'user' | 'assistant' | 'system' | 'data';
@@ -18,6 +19,24 @@ export default function Bubble({
   senderTime = '12:46',
   isLoading,
 }: BubbleProps) {
+  const hasSymptomSummary = (content: string | string[]) => {
+    if (!content) return false; // 사용자 메시지는 제외
+
+    const symptomKeywords = [
+      'Main Symptom:',
+      'Onset/Duration:',
+      'Other Symptoms:',
+      'Past Medical History:',
+      'Medications:',
+    ];
+
+    // 최소 2개 이상의 키워드가 있어야 증상 요약으로 판단
+    const keywordCount = symptomKeywords.filter((keyword) =>
+      content.includes(keyword)
+    ).length;
+
+    return keywordCount >= 2;
+  };
   if (isLoading) {
     return (
       <div className="chat chat-receiver align-self-end w-full">
@@ -48,6 +67,30 @@ export default function Bubble({
   }
 
   if (role === 'assistant' || role === 'system' || role === 'data') {
+    if (hasSymptomSummary(assistantContent)) {
+      return (
+        <div className="chat chat-receiver align-self-end">
+          <div className="chat-avatar avatar">
+            <div className="size-10 rounded-full">
+              <img
+                src="/logo.png"
+                className="rounded-full"
+                alt="avatar"
+              />
+            </div>
+          </div>
+          <div className="chat-header text-base-content flex items-center gap-1">
+            Doctor Guide
+            <time className="text-base-content/50">{assistantTime}</time>
+          </div>
+          <div
+            ref={ref}
+            className="chat-bubble animate-fade animate-duration-500 animate-delay-[10ms] flex-col text-md">
+            <SymptomSummaryCard assistantContent={assistantContent} />
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="chat chat-receiver align-self-end">
         <div className="chat-avatar avatar">
